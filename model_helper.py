@@ -396,6 +396,11 @@ def load_model(model, ckpt_path, session, name):
   utils.print_out(
       "  loaded %s model parameters from %s, time %.2fs" %
       (name, ckpt_path, time.time() - start_time))
+  graph_def = session.graph.as_graph_def()
+  with open('graphdef.pb', 'wb') as f:
+    f.write(graph_def.SerializeToString())
+  with open('graphdef.pbtxt', 'w') as f:
+    f.write(str(graph_def))
   return model
 
 
@@ -479,6 +484,12 @@ def create_or_load_model(model, model_dir, session, name):
     session.run(tf.tables_initializer())
     utils.print_out("  created %s model with fresh parameters, time %.2fs" %
                     (name, time.time() - start_time))
+
+    graph_def = session.graph.as_graph_def()
+    with open('graphdef.pb', 'wb') as f:
+      f.write(graph_def.SerializeToString())
+    with open('graphdef.pbtxt', 'w') as f:
+      f.write(str(graph_def))
 
   global_step = model.global_step.eval(session=session)
   return model, global_step
